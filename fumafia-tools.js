@@ -6,6 +6,7 @@
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
 // @run-at       document-body
+// @updateUrl    https://github.com/lee8oi/fumafia-tools/blob/testing/fumafia-tools.js
 // @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
