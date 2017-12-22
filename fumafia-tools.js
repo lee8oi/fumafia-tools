@@ -7,21 +7,15 @@
 // @match        http://fubar.com/mafia/
 // @run-at       document-body
 // @updateUrl    https://github.com/lee8oi/fumafia-tools/blob/testing/fumafia-tools.js
-// @require      https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
 // ==/UserScript==
 
 var mafia = {
-    set: false,
     menu: {},
-    menuItems: {},
-    marketLink: {},
     marketModule: {},
-    content:{},
     page: {},
-    table: {},
     territoryTable: {},
     territoryNav: {},
     territoryArray: [],
@@ -31,7 +25,6 @@ var mafia = {
     'use strict';
 
     mafia.menu = document.querySelector("div#mafia_header_listmenu");
-    mafia.menuItems = mafia.menu.querySelectorAll("ul li");
     mafia.page = document.querySelector("#pagecontent._mafia_home_page");
 
     contentObserver();
@@ -43,7 +36,8 @@ function contentObserver() {
         //console.log(mutationsList);
         var gameSection = mafia.page.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
-        switch (gameSection.innerHTML) {
+        var sectionTitle = gameSection.innerHTML;
+        switch (sectionTitle) {
             case "Territory &amp; Equipment":
                 mafia.marketModule = mafia.page.querySelector("div.mafia_market");
                 mafia.territoryNav = mafia.marketModule.querySelector("ul.side_nav li");
@@ -56,8 +50,11 @@ function contentObserver() {
                         break;
                     case "Weapons":
                         console.log(activeLink, " Loaded");
+                        break;
                 }
                 break;
+            default:
+                console.log(sectionTitle);
         }
     };
 
