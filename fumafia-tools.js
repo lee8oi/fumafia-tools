@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3
+// @version      0.3.1
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
