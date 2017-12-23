@@ -35,14 +35,6 @@ function contentObserver() {
                 switch (activeLink) {
                     case "Territory":
                         console.log(activeLink, " Loaded");
-//                         var link = document.createElement("a");
-//                         link.setAttribute("class", "on");
-//                         link.setAttribute("href","#");
-//                         link.setAttribute("onclick","return false;");
-//                         link.innerHTML = "CIR Sort";
-//                         link.setAttribute("title", "Sort Territories by Cost-Income Rating");
-//                         link.addEventListener("click", sortTerritories);
-//                         territoryNav.appendChild(link);
                         territorySetup(territoryNav);
                         break;
                     case "Weapons":
@@ -59,17 +51,48 @@ function contentObserver() {
 }
 
 function territorySetup (navItem) {
+    var cash = document.querySelector("span#mafia_cash").innerHTML;
+    //console.log(Number("2000"));
+    cashConvert(cash);
     var link = document.createElement("a");
     link.setAttribute("class", "on");
     link.setAttribute("href","#");
     link.setAttribute("onclick","return false;");
     link.innerHTML = "CIR Sort";
     link.setAttribute("title", "Sort Territories by Cost-Income Rating");
-    link.addEventListener("click", sortTerritories);
+    link.addEventListener("click", territorySort);
     navItem.appendChild(link);
 }
 
-function sortTerritories() {
+function cashConvert(cashString) {
+    cashString.replace("$","").replace(",","");
+    if (isNaN) {
+        var dotsplit = [],
+            result = 0;
+        var firstNumber = 0,
+            secondNumber = "";
+        if (cashString.indexof(".") != -1) {
+            dotsplit = cashString.split(".");
+            firstNumber = dotsplit[0];
+            secondNumber = dotsplit[1];
+            var numberArray = [];
+            if (dotsplit.length > 1) {
+                for (var i = 0; i < secondNumber.length; i++) {
+                    if (isNaN(secondNumber[i])) {
+                        if (secondNumber[1][i] == "M") {
+
+                        }
+                    } else {
+
+                    }
+                }
+            }
+        }
+        
+    }
+}
+
+function territorySort() {
         var territoryTable = mafiaMarket.getElementsByTagName("table")[2],
         territoryRows = territoryTable.getElementsByTagName("tr"),
         territoryArray = [];
