@@ -6,7 +6,7 @@
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
 // @run-at       document-body
-// @updateUrl    https://github.com/lee8oi/fumafia-tools/blob/testing/fumafia-tools.js
+// @updateUrl    https://raw.githubusercontent.com/lee8oi/fumafia-tools/devel/fumafia-tools.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
