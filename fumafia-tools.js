@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
-// @namespace    http://tampermonkey.net/
-// @version      0.1
+// @namespace    https://github.com/lee8oi/
+// @version      0.2
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -23,17 +23,14 @@ var mafia = {
 
 (function() {
     'use strict';
-
     mafia.menu = document.querySelector("div#mafia_header_listmenu");
     mafia.page = document.querySelector("#pagecontent._mafia_home_page");
-
     contentObserver();
 })();
 
 function contentObserver() {
     var config = { attributes: true, childList: true };
-    var callback = function() {
-        //console.log(mutationsList);
+    var callback = function() { //called with mutationList
         var gameSection = mafia.page.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
         var sectionTitle = gameSection.innerHTML;
@@ -57,24 +54,8 @@ function contentObserver() {
                 console.log(sectionTitle);
         }
     };
-
     var observer = new MutationObserver(callback);
     observer.observe(mafia.page.querySelector("#mafia_content_wrapper"), config);
-}
-
-function sortTerritoryArray(arr) {
-    arr.sort(function(a,b) {
-        //return a[0] - b[0]; //smallest to largest
-        return b[0] - a[0]; //largest to smallest
-     });
-    return arr;
-}
-
-function printTerritoryArray(arr) {
-    mafia.territoryTable.innerHTML = "";
-    for (i = 0; i < arr.length; i++) {
-        mafia.territoryTable.appendChild(arr[i][4]);
-    }
 }
 
 function addCirButton() {
@@ -92,20 +73,16 @@ function processTerritories() {
         mafia.territoryTable = mafia.marketModule.getElementsByTagName("table")[2];
         mafia.territoryRows = mafia.territoryTable.getElementsByTagName("tr");
         mafia.territoryArray = [];
-
         for (i = 0; i < mafia.territoryRows.length; i++) {
             if (i === 0) {
                 mafia.territoryArray.push([1000, "", 0, 0, mafia.territoryRows[i]]);
                 continue;
             }
-            var dataTables = mafia.territoryRows[i].getElementsByTagName("td");
-            var costPanel = dataTables[3];
-            var territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML;
-            var territoryCost = costPanel.getElementsByTagName("b")[0].innerHTML.replace(/[\$\,]/g,"");
-            territoryCost = Number(territoryCost);
-            var cashValue = costPanel.getElementsByTagName("span")[1].innerHTML.replace(/[\$\,]/g,"");
-            cashValue = Number(cashValue);
-
+            var dataTables = mafia.territoryRows[i].getElementsByTagName("td"),
+            costPanel = dataTables[3],
+            territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
+            territoryCost = Number(costPanel.getElementsByTagName("b")[0].innerHTML.replace(/[\$\,]/g,"")),
+            cashValue = Number(costPanel.getElementsByTagName("span")[1].innerHTML.replace(/[\$\,]/g,"")),
             valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
             if (valueScore > 1000) {
                 valueScore = valueScore / 100;
@@ -113,6 +90,11 @@ function processTerritories() {
             }
             mafia.territoryArray.push([valueScore, territoryName, territoryCost, cashValue, mafia.territoryRows[i]]);
         }
-        printTerritoryArray(sortTerritoryArray(mafia.territoryArray));
+        mafia.territoryArray.sort(function(a,b) {
+            return b[0] - a[0]; //largest to smallest
+        });
+        mafia.territoryTable.innerHTML = "";
+        for (i = 0; i < mafia.territoryArray.length; i++) {
+            mafia.territoryTable.appendChild(mafia.territoryArray[i][4]);
+        }
 }
-
