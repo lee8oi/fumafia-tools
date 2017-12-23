@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3.1
+// @version      0.3.2
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -52,8 +52,7 @@ function contentObserver() {
 
 function territorySetup (navItem) {
     var cash = document.querySelector("span#mafia_cash").innerHTML;
-    //console.log(Number("2000"));
-    cashConvert(cash);
+    cashToNumber(cash);
     var link = document.createElement("a");
     link.setAttribute("class", "on");
     link.setAttribute("href","#");
@@ -64,31 +63,28 @@ function territorySetup (navItem) {
     navItem.appendChild(link);
 }
 
-function cashConvert(cashString) {
-    cashString.replace("$","").replace(",","");
-    if (isNaN) {
-        var dotsplit = [],
-            result = 0;
-        var firstNumber = 0,
-            secondNumber = "";
+function cashToNumber(cashString) {
+    cashString = cashString.replace("$","").replace(",","");
+    if (isNaN(Number(cashString))) {
+        var num = "", numArray = [], size = "";
         if (cashString.indexOf(".") != -1) {
-            dotsplit = cashString.split(".");
-            firstNumber = dotsplit[0];
-            secondNumber = dotsplit[1];
-            var numberArray = [];
-            if (dotsplit.length > 1) {
-                for (var i = 0; i < secondNumber.length; i++) {
-                    if (isNaN(secondNumber[i])) {
-                        if (secondNumber[1][i] == "M") {
-
-                        }
-                    } else {
-
-                    }
+            numArray = cashString.split("");
+            for (var i = 0; i < numArray.length; i++) {
+                if (isNaN(numArray[i]) && numArray[i] != ".") {
+                    size += numArray[i];
+                    numArray.splice(i,1);
                 }
             }
+            num = Number(numArray.join(""));
+            if (size === "M") {
+                num = num * 1000000;
+            }
         }
-
+        console.log(size, num);
+        return Number(num);
+    } else {
+        console.log(cashString);
+        return Number(cashString);
     }
 }
 
