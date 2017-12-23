@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3.4
+// @version      0.3.5
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -10,13 +10,20 @@
 // @grant        GM_setValue
 // @grant        GM_getValue
 // @grant        GM_deleteValue
+// @grant        GM_addStyle
 // ==/UserScript==
 
 var mafiaMarket = {};
 var player = {};
+var affordTerritoryStyle = `
+tr.affordable {
+    border: 2px solid green;
+}
+`;
 
 (function() {
     'use strict';
+    GM_addStyle(affordTerritoryStyle);
     playerUpdate();
     contentObserver();
 })();
@@ -33,7 +40,6 @@ function playerUpdate() {
 }
 
 function logPlayerData() {
-    var player = {};
     player.cash = GM_getValue("player.cash");
     player.flow = GM_getValue("player.flow");
     player.upkeep = GM_getValue("player.upkeep");
@@ -48,9 +54,9 @@ function contentObserver() {
     var config = { attributes: true, childList: true };
     mafiaPage = document.querySelector("#pagecontent._mafia_home_page");
     var callback = function() { //called with mutationList
-        playerUpdate();
         var gameSection = mafiaPage.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
+        playerUpdate();
         var sectionTitle = gameSection.innerHTML;
         switch (sectionTitle) {
             case "Territory &amp; Equipment":
@@ -88,8 +94,7 @@ function territorySetup (navItem) {
 }
 
 function cashToNumber(cashString) {
-    console.log("inside cashToNumber");
-    cashString = cashString.replace("$","").replace(",","");
+    cashString = cashString.replace(/[\$\,]/g,"");
     var num = "", numArray = [], size = "";
     if (cashString.indexOf(".") != -1) {
         numArray = cashString.split("");
@@ -112,13 +117,21 @@ function territorySort() {
         var territoryTable = mafiaMarket.getElementsByTagName("table")[2],
         territoryRows = territoryTable.getElementsByTagName("tr"),
         territoryArray = [], firstRow = territoryRows[0];
+        var rowStyle = "";
         for (i = 1; i < territoryRows.length; i++) {
             var dataTables = territoryRows[i].getElementsByTagName("td"),
             costPanel = dataTables[3],
             territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
-            territoryCost = Number(costPanel.getElementsByTagName("b")[0].innerHTML.replace(/[\$\,]/g,"")),
+            territoryCost = cashToNumber(costPanel.getElementsByTagName("b")[0].innerHTML),
             cashValue = Number(costPanel.getElementsByTagName("span")[1].innerHTML.replace(/[\$\,]/g,"")),
             valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
+            if (territoryCost < Number(player.cash)) {
+                territoryRows[i].style.outline = "medium solid";
+                territoryRows[i].style.outlineColor = "green";
+            } else {
+                territoryRows[i].style.outline = "medium solid";
+                territoryRows[i].style.outlineColor = "red";
+            }
             territoryArray.push([valueScore, territoryName, territoryCost, cashValue, territoryRows[i]]);
         }
         territoryArray.sort(function(a,b) {
