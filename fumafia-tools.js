@@ -71,7 +71,7 @@ function cashConvert(cashString) {
             result = 0;
         var firstNumber = 0,
             secondNumber = "";
-        if (cashString.indexof(".") != -1) {
+        if (cashString.indexOf(".") != -1) {
             dotsplit = cashString.split(".");
             firstNumber = dotsplit[0];
             secondNumber = dotsplit[1];
@@ -88,7 +88,7 @@ function cashConvert(cashString) {
                 }
             }
         }
-        
+
     }
 }
 
