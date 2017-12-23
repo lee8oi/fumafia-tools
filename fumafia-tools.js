@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.2
+// @version      0.3
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -12,38 +12,37 @@
 // @grant        GM_deleteValue
 // ==/UserScript==
 
-var mafia = {
-    menu: {},
-    marketModule: {},
-    page: {},
-    territoryTable: {},
-    territoryNav: {},
-    territoryArray: [],
-};
+var mafiaMarket = {};
 
 (function() {
     'use strict';
-    mafia.menu = document.querySelector("div#mafia_header_listmenu");
-    mafia.page = document.querySelector("#pagecontent._mafia_home_page");
     contentObserver();
 })();
 
 function contentObserver() {
     var config = { attributes: true, childList: true };
+    mafiaPage = document.querySelector("#pagecontent._mafia_home_page");
     var callback = function() { //called with mutationList
-        var gameSection = mafia.page.querySelector("span.mafia_game_section_hdr");
+        var gameSection = mafiaPage.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
         var sectionTitle = gameSection.innerHTML;
         switch (sectionTitle) {
             case "Territory &amp; Equipment":
-                mafia.marketModule = mafia.page.querySelector("div.mafia_market");
-                mafia.territoryNav = mafia.marketModule.querySelector("ul.side_nav li");
-                var activeLink = mafia.page.querySelector("a.on").innerHTML.trim();
+                mafiaMarket = mafiaPage.querySelector("div.mafia_market");
+                var territoryNav = mafiaMarket.querySelector("ul.side_nav li");
+                var activeLink = mafiaPage.querySelector("a.on").innerHTML.trim();
                 console.log(activeLink);
                 switch (activeLink) {
                     case "Territory":
                         console.log(activeLink, " Loaded");
-                        addCirButton();
+                        var link = document.createElement("a");
+                        link.setAttribute("class", "on");
+                        link.setAttribute("href","#");
+                        link.setAttribute("onclick","return false;");
+                        link.innerHTML = "CIR Sort";
+                        link.setAttribute("title", "Sort Territories by Cost-Income Rating");
+                        link.addEventListener("click", sortTerritories);
+                        territoryNav.appendChild(link);
                         break;
                     case "Weapons":
                         console.log(activeLink, " Loaded");
@@ -55,30 +54,19 @@ function contentObserver() {
         }
     };
     var observer = new MutationObserver(callback);
-    observer.observe(mafia.page.querySelector("#mafia_content_wrapper"), config);
+    observer.observe(mafiaPage.querySelector("#mafia_content_wrapper"), config);
 }
 
-function addCirButton() {
-    var link = document.createElement("a");
-    link.setAttribute("class", "on");
-    link.setAttribute("href","#");
-    link.setAttribute("onclick","return false;");
-    link.innerHTML = "CIR Sort";
-    link.setAttribute("title", "Sort Territories by Cost-Income Rating");
-    link.addEventListener("click", processTerritories);
-    mafia.territoryNav.appendChild(link);
-}
-
-function processTerritories() {
-        mafia.territoryTable = mafia.marketModule.getElementsByTagName("table")[2];
-        mafia.territoryRows = mafia.territoryTable.getElementsByTagName("tr");
-        mafia.territoryArray = [];
-        for (i = 0; i < mafia.territoryRows.length; i++) {
+function sortTerritories() {
+        var territoryTable = mafiaMarket.getElementsByTagName("table")[2],
+        territoryRows = territoryTable.getElementsByTagName("tr"),
+        territoryArray = [];
+        for (i = 0; i < territoryRows.length; i++) {
             if (i === 0) {
-                mafia.territoryArray.push([1000, "", 0, 0, mafia.territoryRows[i]]);
+                territoryArray.push([1000, "", 0, 0, territoryRows[i]]);
                 continue;
             }
-            var dataTables = mafia.territoryRows[i].getElementsByTagName("td"),
+            var dataTables = territoryRows[i].getElementsByTagName("td"),
             costPanel = dataTables[3],
             territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
             territoryCost = Number(costPanel.getElementsByTagName("b")[0].innerHTML.replace(/[\$\,]/g,"")),
@@ -88,13 +76,13 @@ function processTerritories() {
                 valueScore = valueScore / 100;
                 valueScore += ".00";
             }
-            mafia.territoryArray.push([valueScore, territoryName, territoryCost, cashValue, mafia.territoryRows[i]]);
+            territoryArray.push([valueScore, territoryName, territoryCost, cashValue, territoryRows[i]]);
         }
-        mafia.territoryArray.sort(function(a,b) {
+        territoryArray.sort(function(a,b) {
             return b[0] - a[0]; //largest to smallest
         });
-        mafia.territoryTable.innerHTML = "";
-        for (i = 0; i < mafia.territoryArray.length; i++) {
-            mafia.territoryTable.appendChild(mafia.territoryArray[i][4]);
+        territoryTable.innerHTML = "";
+        for (i = 0; i < territoryArray.length; i++) {
+            territoryTable.appendChild(territoryArray[i][4]);
         }
 }
