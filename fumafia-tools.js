@@ -65,25 +65,23 @@ function territorySetup (navItem) {
 
 function cashToNumber(cashString) {
     cashString = cashString.replace("$","").replace(",","");
-    if (isNaN(Number(cashString))) {
-        var num = "", numArray = [], size = "";
-        if (cashString.indexOf(".") != -1) {
-            numArray = cashString.split("");
-            for (var i = 0; i < numArray.length; i++) {
-                if (isNaN(numArray[i]) && numArray[i] != ".") {
-                    size += numArray[i];
-                    numArray.splice(i,1);
-                }
-            }
-            num = Number(numArray.join(""));
-            if (size === "M") {
-                num = num * 1000000;
+    var num = "", numArray = [], size = "";
+    if (cashString.indexOf(".") != -1) {
+        numArray = cashString.split("");
+        for (var i = 0; i < numArray.length; i++) {
+            if (isNaN(numArray[i]) && numArray[i] != ".") {
+                size += numArray[i];
+                numArray.splice(i,1);
             }
         }
-        console.log(size, num);
+        num = Number(numArray.join(""));
+        if (size === "M") {
+            num = num * 1000000;
+        }
+        console.log(size, Number(num));
         return Number(num);
     } else {
-        console.log(cashString);
+        console.log(Number(cashString));
         return Number(cashString);
     }
 }
