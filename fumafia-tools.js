@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3.3
+// @version      0.3.4
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -13,17 +13,42 @@
 // ==/UserScript==
 
 var mafiaMarket = {};
+var player = {};
 
 (function() {
     'use strict';
-    console.log(cashToNumber(document.querySelector("span#mafia_cash").innerHTML));
+    playerUpdate();
     contentObserver();
 })();
+
+function playerUpdate() {
+    GM_setValue("player.cash", cashToNumber(document.querySelector("span#mafia_cash").innerHTML));
+    GM_setValue("player.flow", cashToNumber(document.querySelector("span#mafia_cash_flow").innerHTML));
+    GM_setValue("player.upkeep", cashToNumber(document.querySelector("#mafia_upkeep").innerHTML));
+    GM_setValue("player.health", document.querySelector("span#mafia_health_value").innerHTML);
+    GM_setValue("player.healthMax", document.querySelector("span#mafia_max_health_value").innerHTML);
+    GM_setValue("player.mobSize", document.querySelector("span#mafia_mob_size").innerHTML);
+    GM_setValue("player.rating", document.querySelector("span#mafia_rating").innerHTML);
+    logPlayerData();
+}
+
+function logPlayerData() {
+    var player = {};
+    player.cash = GM_getValue("player.cash");
+    player.flow = GM_getValue("player.flow");
+    player.upkeep = GM_getValue("player.upkeep");
+    player.health = GM_getValue("player.health");
+    player.healthMax = GM_getValue("player.healthMax");
+    player.mobSize = GM_getValue("player.mobSize");
+    player.rating = GM_getValue("player.rating");
+    console.log(player);
+}
 
 function contentObserver() {
     var config = { attributes: true, childList: true };
     mafiaPage = document.querySelector("#pagecontent._mafia_home_page");
     var callback = function() { //called with mutationList
+        playerUpdate();
         var gameSection = mafiaPage.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
         var sectionTitle = gameSection.innerHTML;
@@ -63,6 +88,7 @@ function territorySetup (navItem) {
 }
 
 function cashToNumber(cashString) {
+    console.log("inside cashToNumber");
     cashString = cashString.replace("$","").replace(",","");
     var num = "", numArray = [], size = "";
     if (cashString.indexOf(".") != -1) {
@@ -74,7 +100,7 @@ function cashToNumber(cashString) {
             }
         }
         num = Number(numArray.join(""));
-        if (size === "M") {
+        if (size === "M") { //What other letters are there? Seriously.
             num = num * 1000000;
         }
         return Number(num);
