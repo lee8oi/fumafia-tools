@@ -35,14 +35,15 @@ function contentObserver() {
                 switch (activeLink) {
                     case "Territory":
                         console.log(activeLink, " Loaded");
-                        var link = document.createElement("a");
-                        link.setAttribute("class", "on");
-                        link.setAttribute("href","#");
-                        link.setAttribute("onclick","return false;");
-                        link.innerHTML = "CIR Sort";
-                        link.setAttribute("title", "Sort Territories by Cost-Income Rating");
-                        link.addEventListener("click", sortTerritories);
-                        territoryNav.appendChild(link);
+//                         var link = document.createElement("a");
+//                         link.setAttribute("class", "on");
+//                         link.setAttribute("href","#");
+//                         link.setAttribute("onclick","return false;");
+//                         link.innerHTML = "CIR Sort";
+//                         link.setAttribute("title", "Sort Territories by Cost-Income Rating");
+//                         link.addEventListener("click", sortTerritories);
+//                         territoryNav.appendChild(link);
+                        territorySetup(territoryNav);
                         break;
                     case "Weapons":
                         console.log(activeLink, " Loaded");
@@ -55,6 +56,17 @@ function contentObserver() {
     };
     var observer = new MutationObserver(callback);
     observer.observe(mafiaPage.querySelector("#mafia_content_wrapper"), config);
+}
+
+function territorySetup (navItem) {
+    var link = document.createElement("a");
+    link.setAttribute("class", "on");
+    link.setAttribute("href","#");
+    link.setAttribute("onclick","return false;");
+    link.innerHTML = "CIR Sort";
+    link.setAttribute("title", "Sort Territories by Cost-Income Rating");
+    link.addEventListener("click", sortTerritories);
+    navItem.appendChild(link);
 }
 
 function sortTerritories() {
