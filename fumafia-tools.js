@@ -55,7 +55,6 @@ function contentObserver() {
                 mafiaMarket = mafiaPage.querySelector("div.mafia_market");
                 var territoryNav = mafiaMarket.querySelector("ul.side_nav li");
                 var activeLink = mafiaPage.querySelector("a.on").innerHTML.trim();
-                console.log(activeLink);
                 switch (activeLink) {
                     case "Territory":
                         console.log(activeLink, " Loaded");
@@ -115,8 +114,9 @@ function territorySort() {
             costPanel = dataTables[3],
             territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
             territoryCost = cashToNumber(costPanel.getElementsByTagName("b")[0].innerHTML),
-            cashValue = Number(costPanel.getElementsByTagName("span")[1].innerHTML.replace(/[\$\,]/g,"")),
+            cashValue = cashToNumber(costPanel.getElementsByTagName("span")[1].innerHTML),
             valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
+            console.log(territoryName, territoryCost, player.cash);
             if (territoryCost < Number(player.cash)) {
                 territoryRows[i].style.outline = "medium solid";
                 territoryRows[i].style.outlineColor = "green";
