@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3.2
+// @version      0.3.3
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
@@ -16,6 +16,7 @@ var mafiaMarket = {};
 
 (function() {
     'use strict';
+    console.log(cashToNumber(document.querySelector("span#mafia_cash").innerHTML));
     contentObserver();
 })();
 
@@ -51,8 +52,6 @@ function contentObserver() {
 }
 
 function territorySetup (navItem) {
-    var cash = document.querySelector("span#mafia_cash").innerHTML;
-    cashToNumber(cash);
     var link = document.createElement("a");
     link.setAttribute("class", "on");
     link.setAttribute("href","#");
@@ -78,39 +77,29 @@ function cashToNumber(cashString) {
         if (size === "M") {
             num = num * 1000000;
         }
-        console.log(size, Number(num));
         return Number(num);
-    } else {
-        console.log(Number(cashString));
-        return Number(cashString);
     }
+    return Number(cashString);
 }
 
 function territorySort() {
         var territoryTable = mafiaMarket.getElementsByTagName("table")[2],
         territoryRows = territoryTable.getElementsByTagName("tr"),
-        territoryArray = [];
-        for (i = 0; i < territoryRows.length; i++) {
-            if (i === 0) {
-                territoryArray.push([1000, "", 0, 0, territoryRows[i]]);
-                continue;
-            }
+        territoryArray = [], firstRow = territoryRows[0];
+        for (i = 1; i < territoryRows.length; i++) {
             var dataTables = territoryRows[i].getElementsByTagName("td"),
             costPanel = dataTables[3],
             territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
             territoryCost = Number(costPanel.getElementsByTagName("b")[0].innerHTML.replace(/[\$\,]/g,"")),
             cashValue = Number(costPanel.getElementsByTagName("span")[1].innerHTML.replace(/[\$\,]/g,"")),
             valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
-            if (valueScore > 1000) {
-                valueScore = valueScore / 100;
-                valueScore += ".00";
-            }
             territoryArray.push([valueScore, territoryName, territoryCost, cashValue, territoryRows[i]]);
         }
         territoryArray.sort(function(a,b) {
             return b[0] - a[0]; //largest to smallest
         });
         territoryTable.innerHTML = "";
+        territoryTable.appendChild(firstRow);
         for (i = 0; i < territoryArray.length; i++) {
             territoryTable.appendChild(territoryArray[i][4]);
         }
