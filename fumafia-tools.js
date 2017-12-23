@@ -9,21 +9,13 @@
 // @updateUrl    https://raw.githubusercontent.com/lee8oi/fumafia-tools/devel/fumafia-tools.js
 // @grant        GM_setValue
 // @grant        GM_getValue
-// @grant        GM_deleteValue
-// @grant        GM_addStyle
 // ==/UserScript==
 
 var mafiaMarket = {};
 var player = {};
-var affordTerritoryStyle = `
-tr.affordable {
-    border: 2px solid green;
-}
-`;
 
 (function() {
     'use strict';
-    GM_addStyle(affordTerritoryStyle);
     playerUpdate();
     contentObserver();
 })();
