@@ -1,29 +1,32 @@
 // ==UserScript==
 // @name         FuMafia Tools
 // @namespace    https://github.com/lee8oi/
-// @version      0.3.5
+// @version      0.3.6
 // @description  Tools for making better choices on FuMafia.
 // @author       lee8oi@gmail.com
 // @match        http://fubar.com/mafia/
-// @run-at       document-body
+// @run-at       document-end
 // @updateUrl    https://raw.githubusercontent.com/lee8oi/fumafia-tools/devel/fumafia-tools.js
 // @grant        GM_setValue
 // @grant        GM_getValue
 // ==/UserScript==
 
 var mafiaMarket = {};
+var mafiaPage = {};
 var player = {};
 
 (function() {
     'use strict';
-    playerUpdate();
+    //playerUpdate();
     contentObserver();
+    playerObserver();
+    logPlayerData();
 })();
 
 function playerUpdate() {
     GM_setValue("player.cash", cashToNumber(document.querySelector("span#mafia_cash").innerHTML));
     GM_setValue("player.flow", cashToNumber(document.querySelector("span#mafia_cash_flow").innerHTML));
-    GM_setValue("player.upkeep", cashToNumber(document.querySelector("#mafia_upkeep").innerHTML));
+    GM_setValue("player.upkeep", cashToNumber(document.querySelector("b#mafia_upkeep").innerHTML));
     GM_setValue("player.health", document.querySelector("span#mafia_health_value").innerHTML);
     GM_setValue("player.healthMax", document.querySelector("span#mafia_max_health_value").innerHTML);
     GM_setValue("player.mobSize", document.querySelector("span#mafia_mob_size").innerHTML);
@@ -42,13 +45,53 @@ function logPlayerData() {
     console.log(player);
 }
 
+function playerObserver() {
+    var config = { attributes: true, characterData: true, childList: true };
+    var callback1 = function() {
+        GM_setValue("player.cash", cashToNumber(document.querySelector("span#mafia_cash").innerHTML));
+        logPlayerData();
+    };
+    var observer1 = new MutationObserver(callback1);
+    observer1.observe(mafiaPage.querySelector("span#mafia_cash"), config);
+    var callback2 = function() {
+        GM_setValue("player.flow", cashToNumber(document.querySelector("span#mafia_cash_flow").innerHTML));
+    };
+    var observer2 = new MutationObserver(callback2);
+    observer2.observe(mafiaPage.querySelector("span#mafia_cash_flow"), config);
+    var callback3 = function() {
+        GM_setValue("player.upkeep", cashToNumber(document.querySelector("b#mafia_upkeep").innerHTML));
+    };
+    var observer3 = new MutationObserver(callback3);
+    observer3.observe(mafiaPage.querySelector("b#mafia_upkeep"), config);
+    var callback4 = function() {
+        GM_setValue("player.health", document.querySelector("span#mafia_health_value").innerHTML);
+    };
+    var observer4 = new MutationObserver(callback4);
+    observer4.observe(mafiaPage.querySelector("span#mafia_health_value"), config);
+    var callback5 = function () {
+        GM_setValue("player.healthMax", document.querySelector("span#mafia_max_health_value").innerHTML);
+    };
+    var observer5 = new MutationObserver(callback5);
+    observer5.observe(mafiaPage.querySelector("span#mafia_max_health_value"), config);
+    var callback6 = function() {
+        GM_setValue("player.mobSize", document.querySelector("span#mafia_mob_size").innerHTML);
+    };
+    var observer6 = new MutationObserver(callback6);
+    observer6.observe(mafiaPage.querySelector("span#mafia_mob_size"), config);
+    var callback7 = function() {
+        GM_setValue("player.rating", document.querySelector("span#mafia_rating").innerHTML);
+    };
+    var observer7 = new MutationObserver(callback7);
+    observer7.observe(mafiaPage.querySelector("span#mafia_rating"), config);
+}
+
 function contentObserver() {
     var config = { attributes: true, childList: true };
     mafiaPage = document.querySelector("#pagecontent._mafia_home_page");
     var callback = function() { //called with mutationList
         var gameSection = mafiaPage.querySelector("span.mafia_game_section_hdr");
         if (!gameSection) return;
-        playerUpdate();
+        logPlayerData();
         var sectionTitle = gameSection.innerHTML;
         switch (sectionTitle) {
             case "Territory &amp; Equipment":
@@ -116,8 +159,8 @@ function territorySort() {
             territoryCost = cashToNumber(costPanel.getElementsByTagName("b")[0].innerHTML),
             cashValue = cashToNumber(costPanel.getElementsByTagName("span")[1].innerHTML),
             valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
-            console.log(territoryName, territoryCost, player.cash);
-            if (territoryCost < Number(player.cash)) {
+            console.log(territoryName, territoryCost, GM_getValue("player.cash"));
+            if (territoryCost < GM_getValue("player.cash")) {
                 territoryRows[i].style.outline = "medium solid";
                 territoryRows[i].style.outlineColor = "green";
             } else {
