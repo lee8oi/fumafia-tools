@@ -158,11 +158,17 @@ function territorySort() {
             territoryName = dataTables[1].querySelector(".mafia_item_hdr").innerHTML,
             territoryCost = cashToNumber(costPanel.getElementsByTagName("b")[0].innerHTML),
             cashValue = cashToNumber(costPanel.getElementsByTagName("span")[1].innerHTML),
-            valueScore = (cashValue / territoryCost * 1000).toPrecision(3);
+            valueScore = (cashValue / territoryCost * 1000).toPrecision(3),
+            playerCash = GM_getValue("player.cash");
             console.log(territoryName, territoryCost, GM_getValue("player.cash"));
-            if (territoryCost < GM_getValue("player.cash")) {
-                territoryRows[i].style.outline = "medium solid";
-                territoryRows[i].style.outlineColor = "green";
+            if (territoryCost < playerCash) {
+                if (territoryCost * 10 <= playerCash) {
+                    territoryRows[i].style.outline = "medium solid";
+                    territoryRows[i].style.outlineColor = "green";
+                } else {
+                    territoryRows[i].style.outline = "medium solid";
+                    territoryRows[i].style.outlineColor = "yellow";
+                }
             } else {
                 territoryRows[i].style.outline = "medium solid";
                 territoryRows[i].style.outlineColor = "red";
